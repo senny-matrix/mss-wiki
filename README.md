@@ -34,3 +34,24 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Shadcn install
+
+- Refer to the documentation for other package managers, but for bun, do the
+  following:
+
+```bash
+bunx --bun shadcn@latest init -t nextjs
+```
+
+- To add a component (for example button) do the following:
+
+```bash
+bunx --bun shadcn@latest add button
+```
+
+- To lint and fix lint errors in your file, do the following:
+
+```bash
+bun run lint -- --fix --unsafe
+```
