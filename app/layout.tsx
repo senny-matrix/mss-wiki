@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NavBar } from "@/components/nav-bar";
+
+// Hexclave
+import { HexclaveProvider, HexclaveTheme } from "@hexclave/next";
+import { hexclaveServerApp } from "@/hexclave/server";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,8 +30,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <NavBar />
-        {children}
+        <HexclaveProvider app={hexclaveServerApp}>
+          <HexclaveTheme>
+            <NavBar />
+            {children}
+          </HexclaveTheme>
+        </HexclaveProvider>
       </body>
     </html>
   );

@@ -5,8 +5,11 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { UserButton } from "@hexclave/next";
+import { hexclaveServerApp } from "@/hexclave/server";
 
-export function NavBar() {
+export async function NavBar() {
+  const user = await hexclaveServerApp.getUser()
   return (
     <nav
       className="
@@ -29,21 +32,30 @@ export function NavBar() {
           MicroSkills Wiki
         </Link>
         <NavigationMenu>
-          <NavigationMenuList
+
+
+            <NavigationMenuList
             className="
             flex items-center gap-2
             "
           >
+            {
+            user ? (
+              <NavigationMenuItem>
+                <UserButton />
+              </NavigationMenuItem>
+              ) : (
+                  <>
             <NavigationMenuItem>
               <Button variant={"outline"}>
-                <Link href={"/signin"}>Sign In</Link>
+                <Link href={"/handler/sign-in"}>Sign In</Link>
               </Button>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Button variant={"secondary"}>
-                <Link href={"/signup"}>Sign Up</Link>
+                <Link href={"/handler/sign-up"}>Sign Up</Link>
               </Button>
-            </NavigationMenuItem>
+            </NavigationMenuItem></>)}
           </NavigationMenuList>
         </NavigationMenu>
       </div>

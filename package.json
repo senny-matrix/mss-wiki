@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "hexclave dev --config-file ./hexclave.config.ts -- bun run dev:inner",
+    "dev:inner": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
@@ -12,6 +13,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@hexclave/next": "^1.0.95",
     "@uiw/react-md-editor": "^4.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.2",
+    "@hexclave/cli": "^1.0.95",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
