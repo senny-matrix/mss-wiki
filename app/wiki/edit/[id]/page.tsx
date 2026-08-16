@@ -1,4 +1,6 @@
 import WikiEditor from "@/components/wiki-editor";
+import { hexclaveServerApp } from "@/hexclave/server";
+import { redirect } from "next/navigation";
 
 interface EditArticlePageProps {
   params: Promise<{
@@ -9,6 +11,11 @@ interface EditArticlePageProps {
 export default async function EditArticlePage({
   params,
 }: EditArticlePageProps) {
+
+  const user = await hexclaveServerApp.getUser();
+  if (!user) {
+    redirect("/handler/sign-in");
+  }
   const { id } = await params;
 
   // In a real app, you would fetch the article data here

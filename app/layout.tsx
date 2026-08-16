@@ -1,9 +1,8 @@
+// Hexclave
+import { HexclaveProvider, HexclaveTheme } from "@hexclave/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NavBar } from "@/components/nav-bar";
-
-// Hexclave
-import { HexclaveProvider, HexclaveTheme } from "@hexclave/next";
 import { hexclaveServerApp } from "@/hexclave/server";
 
 import "./globals.css";
