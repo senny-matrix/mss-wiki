@@ -2,6 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { hexclaveServerApp } from "@/hexclave/server";
+import { eq } from "drizzle-orm";
+import db from "@/src/db";
+import { articles } from "@/src/db/schema";
 
 export type CreateArticleInput = {
   title: string;
@@ -21,9 +24,23 @@ export async function createArticle(data: CreateArticleInput) {
   if (!user) {
     throw new Error("❌ - Unauthorized");
   }
-  // TODO: Replace with actual database call
+
   console.log("✨ createArticle called:", data);
-  return { success: true, message: "Article create logged (stub)" };
+
+  try {
+    await db.insert(articles)
+      .values({
+        title: data.title,
+        content: data.content,
+        slug: `${Date.now()}`,
+        published: true,
+        authorId: user.id
+      });
+  } catch (e) {
+    console.error("Failed to create article. The error was : ", e);
+  }
+
+    return { success: true, message: "Article create logged (stub)" };
 }
 
 export async function updateArticle(id: string, data: UpdateArticleInput) {
@@ -33,14 +50,31 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
   }
 
   const authorId = user.id;
-  // TODO: Replace with actual database update
+
   console.log("📝 updateArticle called:", { id, ...data });
-  return { success: true, message: `Article ${id} update logged (stub)` };
+  try {
+    await db.update(articles)
+      .set({
+        title: data.title,
+        content: data.content,
+      }).where(eq(articles.id, +id))
+  } catch (e) {
+    console.error("Failed to update. The error was :", e);
+  }
+
+    return { success: true, message: `Article ${id} update logged (stub)` };
 }
 
 export async function deleteArticle(id: string) {
-  // TODO: Replace with actual database delete
+
   console.log("🗑️ deleteArticle called:", id);
+
+  try {
+    await db.delete(articles)
+      .where(eq(articles.id, +id));
+  } catch (e) {
+    console.error("Failed to delete article. The error was : ", e);
+  }
   return { success: true, message: `Article ${id} delete logged (stub)` };
 }
 
