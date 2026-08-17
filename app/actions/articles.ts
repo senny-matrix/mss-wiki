@@ -4,12 +4,12 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { hexclaveServerApp } from "@/hexclave/server";
 import db from "@/src/db";
+import { authorizeUserToEditArticle } from "@/src/db/authZ";
 import { articles } from "@/src/db/schema";
 
 export type CreateArticleInput = {
   title: string;
   content: string;
-  authorId: string;
   imageUrl?: string;
 };
 
@@ -27,19 +27,18 @@ export async function createArticle(data: CreateArticleInput) {
 
   console.log("✨ createArticle called:", data);
 
-  try {
-    await db.insert(articles).values({
+  const inserted = await db
+    .insert(articles)
+    .values({
       title: data.title,
       content: data.content,
       slug: `${Date.now()}`,
       published: true,
       authorId: user.id,
-    });
-  } catch (e) {
-    console.error("Failed to create article. The error was : ", e);
-  }
+    })
+    .returning({ id: articles.id });
 
-  return { success: true, message: "Article create logged (stub)" };
+  return { success: true, id: inserted[0]?.id };
 }
 
 export async function updateArticle(id: string, data: UpdateArticleInput) {
@@ -48,25 +47,28 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
     throw new Error("❌ - Unauthorized");
   }
 
-  const _authorId = user.id;
-
-  console.log("📝 updateArticle called:", { id, ...data });
-  try {
-    await db
-      .update(articles)
-      .set({
-        title: data.title,
-        content: data.content,
-      })
-      .where(eq(articles.id, +id));
-  } catch (e) {
-    console.error("Failed to update. The error was :", e);
+  if (!(await authorizeUserToEditArticle(user.id, +id))) {
+    throw new Error("❌ - Forbidden");
   }
+  console.log("📝 updateArticle called:", { id, ...data });
 
-  return { success: true, message: `Article ${id} update logged (stub)` };
+  await db
+    .update(articles)
+    .set({
+      title: data.title,
+      content: data.content,
+    })
+    .where(eq(articles.id, +id));
+
+  return { success: true, id: +id };
 }
 
 export async function deleteArticle(id: string) {
+  const user = await hexclaveServerApp.getUser();
+  if (!user) {
+    throw new Error("❌ - Unauthorized");
+  }
+
   console.log("🗑️ deleteArticle called:", id);
 
   try {
@@ -74,6 +76,7 @@ export async function deleteArticle(id: string) {
   } catch (e) {
     console.error("Failed to delete article. The error was : ", e);
   }
+
   return { success: true, message: `Article ${id} delete logged (stub)` };
 }
 
