@@ -8,6 +8,13 @@
       "when": 1786936851342,
       "tag": "0000_glamorous_romulus",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786967814980,
+      "tag": "0001_drop_articles_users_sync_fk",
+      "breakpoints": true
     }
   ]
 }

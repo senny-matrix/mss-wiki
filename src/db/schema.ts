@@ -1,4 +1,3 @@
-import { usersSync } from "drizzle-orm/neon";
 import { boolean, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const articles = pgTable("articles", {
@@ -8,9 +7,8 @@ export const articles = pgTable("articles", {
   content: text("content").notNull(),
   imageUrl: text("image_url"),
   published: boolean("published").default(false).notNull(),
-  authorId: text("author_id")
-    .notNull()
-    .references(() => usersSync.id),
+  // Hexclave user id (users live in Hexclave, not in this database).
+  authorId: text("author_id").notNull(),
   createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "string" }).defaultNow().notNull(),
 });

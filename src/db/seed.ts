@@ -1,10 +1,13 @@
-import { usersSync } from "drizzle-orm/neon";
 import { seed } from "drizzle-seed";
 import db, { sql } from "@/src/db/index";
 import { articles } from "@/src/db/schema";
 
 const SEED_COUNT = 25;
 const SEED = 1337;
+
+// Users live in Hexclave (not in this database), so seed articles against a
+// placeholder author id. Replace this with a real Hexclave user id after signing in.
+const AUTHOR_IDS = ["seed-author-001"];
 
 async function main() {
   try {
@@ -15,20 +18,8 @@ async function main() {
     // This is simpler and avoids needing to call setval later.
     await sql.query("TRUNCATE TABLE articles RESTART IDENTITY CASCADE;");
 
-    console.log("🔎 Querying existing users...");
-    const users = await db
-      .select({ id: usersSync.id })
-      .from(usersSync)
-      .orderBy(usersSync.id);
-
-    if (users.length === 0) {
-      throw new Error(
-        "No users found in neon_auth.users_sync. Sign in via Neon Auth at least once before seeding so articles have a valid authorId.",
-      );
-    }
-
-    const ids = users.map((user) => user.id);
-    console.log(`👥 Using ${users.length} user(s)`);
+    const ids = AUTHOR_IDS;
+    console.log(`👥 Using ${ids.length} author id(s)`);
 
     console.log("🍩 Using drizzle-seed...");
     await seed(db, { articles }, { seed: SEED }).refine((funcs) => ({
