@@ -1,5 +1,5 @@
-import { pgTable, serial, text, timestamp, boolean } from "drizzle-orm/pg-core";
 import { usersSync } from "drizzle-orm/neon";
+import { boolean, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const articles = pgTable("articles", {
   id: serial("id").primaryKey(),
@@ -11,13 +11,11 @@ export const articles = pgTable("articles", {
   authorId: text("author_id")
     .notNull()
     .references(() => usersSync.id),
-  createdAt: timestamp("created_at", { mode: "string" })
-    .defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "string" })
-    .defaultNow().notNull(),
+  createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "string" }).defaultNow().notNull(),
 });
 
-const schema = { articles }
+const schema = { articles };
 
 export default schema;
 
