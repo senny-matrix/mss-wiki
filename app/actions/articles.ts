@@ -1,8 +1,8 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { hexclaveServerApp } from "@/hexclave/server";
-import { eq } from "drizzle-orm";
 import db from "@/src/db";
 import { articles } from "@/src/db/schema";
 
@@ -28,19 +28,18 @@ export async function createArticle(data: CreateArticleInput) {
   console.log("✨ createArticle called:", data);
 
   try {
-    await db.insert(articles)
-      .values({
-        title: data.title,
-        content: data.content,
-        slug: `${Date.now()}`,
-        published: true,
-        authorId: user.id
-      });
+    await db.insert(articles).values({
+      title: data.title,
+      content: data.content,
+      slug: `${Date.now()}`,
+      published: true,
+      authorId: user.id,
+    });
   } catch (e) {
     console.error("Failed to create article. The error was : ", e);
   }
 
-    return { success: true, message: "Article create logged (stub)" };
+  return { success: true, message: "Article create logged (stub)" };
 }
 
 export async function updateArticle(id: string, data: UpdateArticleInput) {
@@ -49,29 +48,29 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
     throw new Error("❌ - Unauthorized");
   }
 
-  const authorId = user.id;
+  const _authorId = user.id;
 
   console.log("📝 updateArticle called:", { id, ...data });
   try {
-    await db.update(articles)
+    await db
+      .update(articles)
       .set({
         title: data.title,
         content: data.content,
-      }).where(eq(articles.id, +id))
+      })
+      .where(eq(articles.id, +id));
   } catch (e) {
     console.error("Failed to update. The error was :", e);
   }
 
-    return { success: true, message: `Article ${id} update logged (stub)` };
+  return { success: true, message: `Article ${id} update logged (stub)` };
 }
 
 export async function deleteArticle(id: string) {
-
   console.log("🗑️ deleteArticle called:", id);
 
   try {
-    await db.delete(articles)
-      .where(eq(articles.id, +id));
+    await db.delete(articles).where(eq(articles.id, +id));
   } catch (e) {
     console.error("Failed to delete article. The error was : ", e);
   }
