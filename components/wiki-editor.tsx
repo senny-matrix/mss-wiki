@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
 import { createArticle, updateArticle } from "@/app/actions/articles";
+import { uploadFile } from "@/app/actions/upload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -80,10 +81,22 @@ export default function WikiEditor({
       const trimmedTitle = title.trim();
       const trimmedContent = content.trim();
 
+      // Upload the first selected image and use it as the article image.
+      let imageUrl: string | undefined;
+      if (files.length > 0) {
+        const formData = new FormData();
+        for (const file of files) {
+          formData.append("files", file);
+        }
+        const uploaded = await uploadFile(formData);
+        imageUrl = uploaded.url;
+      }
+
       if (isEditing && articleId) {
         await updateArticle(articleId, {
           title: trimmedTitle,
           content: trimmedContent,
+          imageUrl,
         });
         router.push(`/wiki/${articleId}`);
         router.refresh();
@@ -91,6 +104,7 @@ export default function WikiEditor({
         const result = await createArticle({
           title: trimmedTitle,
           content: trimmedContent,
+          imageUrl,
         });
         if (result.id) {
           router.push(`/wiki/${result.id}`);

@@ -15,8 +15,17 @@ export const authorizeUserToEditArticle =
       .where(eq(articles.id, articleId));
 
     if (!response.length) {
+      console.error("🔒 authZ: article not found", { articleId });
       return false;
     }
 
-    return response[0].authorId === loggedInUserId;
+    const articleAuthorId = response[0].authorId;
+    if (articleAuthorId !== loggedInUserId) {
+      console.error("🔒 authZ: author mismatch", {
+        loggedInUserId,
+        articleAuthorId,
+        articleId,
+      });
+    }
+    return articleAuthorId === loggedInUserId;
   };

@@ -11,4 +11,10 @@ CREATE TABLE "articles" (
 	CONSTRAINT "articles_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-ALTER TABLE "articles" ADD CONSTRAINT "articles_author_id_users_sync_id_fk" FOREIGN KEY ("author_id") REFERENCES "neon_auth"."users_sync"("id") ON DELETE no action ON UPDATE no action;
+CREATE TABLE "usersSync" (
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text,
+	"email" text
+);
+--> statement-breakpoint
+ALTER TABLE "articles" ADD CONSTRAINT "articles_author_id_usersSync_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."usersSync"("id") ON DELETE no action ON UPDATE no action;

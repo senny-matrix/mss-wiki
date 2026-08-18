@@ -1,25 +1,33 @@
 import { seed } from "drizzle-seed";
 import db, { sql } from "@/src/db/index";
-import { articles } from "@/src/db/schema";
+import { articles, usersSync } from "@/src/db/schema";
 
 const SEED_COUNT = 25;
 const SEED = 1337;
-
-// Users live in Hexclave (not in this database), so seed articles against a
-// placeholder author id. Replace this with a real Hexclave user id after signing in.
-const AUTHOR_IDS = ["seed-author-001"];
 
 async function main() {
   try {
     console.log(`🌱 Starting DB seed with seed ${SEED}...`);
 
+    console.log("🔎 Querying existing users from usersSync...");
+    const users = await db
+      .select({ id: usersSync.id })
+      .from(usersSync)
+      .orderBy(usersSync.id);
+
+    if (users.length === 0) {
+      throw new Error(
+        "No users found in public.usersSync. Sign in via Hexclave at least once so your user gets synced, then re-run the seed.",
+      );
+    }
+
+    const ids = users.map((user) => user.id);
+    console.log(`👥 Using ${users.length} user(s)`);
+
     console.log("🧹 Truncating articles table and restarting identity...");
     // Use TRUNCATE + RESTART IDENTITY so sequences are reset to match an empty table.
     // This is simpler and avoids needing to call setval later.
     await sql.query("TRUNCATE TABLE articles RESTART IDENTITY CASCADE;");
-
-    const ids = AUTHOR_IDS;
-    console.log(`👥 Using ${ids.length} author id(s)`);
 
     console.log("🍩 Using drizzle-seed...");
     await seed(db, { articles }, { seed: SEED }).refine((funcs) => ({
