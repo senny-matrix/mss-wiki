@@ -5,6 +5,14 @@ import { articles, usersSync } from "@/src/db/schema";
 
 export const ARTICLES_CACHE_KEY = "articles:all";
 
+type ArticleRow = {
+  id: number;
+  title: string;
+  createdAt: string;
+  content: string;
+  author: string | null;
+};
+
 /**
  * Drop the cached articles list so the next read re-queries the DB.
  * Call this after any mutation (create / update / delete).
@@ -14,7 +22,7 @@ export async function invalidateArticlesCache() {
 }
 
 export async function getArticles() {
-  const cached = await redis.get("articles:all");
+  const cached = await redis.get<ArticleRow[]>("articles:all");
   if (cached) {
     console.log("🎯 Get Articles Cache Hit!");
     return cached;
