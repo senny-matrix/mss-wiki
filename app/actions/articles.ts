@@ -3,10 +3,10 @@
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { hexclaveServerApp } from "@/hexclave/server";
+import { invalidateArticlesCache } from "@/lib/data/articles";
 import db from "@/src/db";
 import { authorizeUserToEditArticle } from "@/src/db/authZ";
 import { articles } from "@/src/db/schema";
-import { invalidateArticlesCache } from "@/lib/data/articles";
 
 export type CreateArticleInput = {
   title: string;
