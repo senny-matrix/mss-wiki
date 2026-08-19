@@ -6,6 +6,7 @@ import { hexclaveServerApp } from "@/hexclave/server";
 import db from "@/src/db";
 import { authorizeUserToEditArticle } from "@/src/db/authZ";
 import { articles } from "@/src/db/schema";
+import { invalidateArticlesCache } from "@/lib/data/articles";
 
 export type CreateArticleInput = {
   title: string;
@@ -39,6 +40,8 @@ export async function createArticle(data: CreateArticleInput) {
     })
     .returning({ id: articles.id });
 
+  await invalidateArticlesCache();
+
   return { success: true, id: inserted[0]?.id };
 }
 
@@ -62,6 +65,8 @@ export async function updateArticle(id: string, data: UpdateArticleInput) {
     })
     .where(eq(articles.id, +id));
 
+  await invalidateArticlesCache();
+
   return { success: true, id: +id };
 }
 
@@ -78,6 +83,8 @@ export async function deleteArticle(id: string) {
   } catch (e) {
     console.error("Failed to delete article. The error was : ", e);
   }
+
+  await invalidateArticlesCache();
 
   return { success: true, message: `Article ${id} delete logged (stub)` };
 }
