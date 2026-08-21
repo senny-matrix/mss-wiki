@@ -37,7 +37,7 @@ export default async function sendCelebrationEmail(
   // });
 
   const emailRes = await resend.emails.send({
-    from: "MSS Wiki <onboarding@resend.dev",
+    from: "MSS Wiki <onboarding@resend.dev>",
     to: "arumeru@gmail.com",
     subject: `Your article on MSS Wiki got ${pageViews} views`,
     html: `
