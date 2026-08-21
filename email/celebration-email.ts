@@ -1,4 +1,3 @@
-import { log } from "console";
 import { eq } from "drizzle-orm";
 import resend from "@/email";
 import db from "@/src/db";
